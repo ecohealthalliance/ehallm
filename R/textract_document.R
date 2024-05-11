@@ -10,7 +10,9 @@
 textract_document <- function(bucket, file) {
 
   # Start analyzing the PDF.
-  resp <- paws::textract$start_document_analysis(
+  textract <- paws::textract()
+
+  resp <- textract()$start_document_analysis(
     DocumentLocation = list(
       S3Object = list(Bucket = bucket, Name = file)
     ),

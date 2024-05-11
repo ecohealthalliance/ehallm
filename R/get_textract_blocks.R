@@ -6,26 +6,17 @@
 #' @export
 #'
 #' @examples
-get_textract_blocks <- function(doc) {
+get_textract_blocks <- function(document) {
 
-  blocks <- doc$Blocks |> map(~as_tibble(rbind(.x))) |> bind_rows()
+  blocks <- document$Blocks |> map(~as_tibble(rbind(.x))) |> bind_rows()
 
-  # Check if each list in a column has length 0 or 1
-  zero_or_one_length_columns <- sapply(blocks, function(x) all(lengths(x) %in% c(0, 1)))
+  ## This is very opaque but it essentially de-lists list columns where each cell contains only one element or less
+  blocks <- blocks |> mutate(across(where(~max(sapply(.x, length)) <= 1), ~map_vec(.x, ~if(length(.x) > 0) .x[[1]] else NA)))
 
-  # Unnest columns with lists of length 0 or 1, replacing length 0 with NA
-  blocks <- blocks %>%
-    mutate(across(where(~is.list(.)), ~if (all(lengths(.) %in% c(0, 1))) {
-      ifelse(lengths(.) == 0, NA, unlist(.))
-    } else .))
 
   # Unnest Relationships column to make it easier to work with
   blocks <- blocks |> mutate(Relationships = map(Relationships, bind_rows),
-                          library(tidyverse)
-library(targets)   Geometry = map(Geometry, bind_rows))
+                             Geometry = map(Geometry, bind_rows))
 
-  |> mutate(Relationships = map(Relationships, ~.x |> bind_rows()))
-
-  # Unnest Geometry column to make it easier to work with
-  blocks <- blocks |> unnest(Geometry) |> mutate(Geometry = map(Geometry, ~.x |> bind_rows()))
+  blocks
 }
