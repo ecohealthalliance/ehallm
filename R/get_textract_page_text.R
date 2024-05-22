@@ -37,17 +37,18 @@ get_block_table <- function(block, blocks) {
 
   cells <- get_block_children(block, blocks) |>
     unnest(Relationships) |>
-    left_join(blocks |>
-                select(Text, Id), by = c("Ids" = "Id")) |>
+    left_join(blocks |> select(Text, Id), by = c("Ids" = "Id")) |>
     mutate(Text = coalesce(Text.x, Text.y))
 
   # 1. Go through a table's cells one-by-one
   table <- matrix(nrow = max(cells$RowIndex, na.rm=T), ncol = max(cells$ColumnIndex, na.rm=T))
-  for (i in 1:nrow(cells)) table[cells[i,]$RowIndex, cells[i,]$ColumnIndex] <- paste(cells[i,]$Text, collapse = " ")
+  for (i in 1:nrow(cells)) table[cells[i,]$RowIndex, cells[i,]$ColumnIndex] <- paste(table[cells[i,]$RowIndex, cells[i,]$ColumnIndex] |> na.omit(), cells[i,]$Text, sep = " ", collapse = " ") |> stringr::str_squish()
 
-  tibble(table = list(table),
+  tb <- tibble(table = list(table),
        table.name = cells |> filter(BlockType == "TABLE_TITLE") |> pull(Text) |> paste(collapse = " "),
        table.footer = cells |> filter(BlockType == "TABLE_FOOTER") |> pull(Text) |> paste(collapse = " "))
+
+  tb
 }
 
 
