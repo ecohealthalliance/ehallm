@@ -1,4 +1,10 @@
 # EHA Large Language Model (LLM) resources
+EHALLM is a collection of R functions and scripts for interacting with OpenAI and other Large Language Models (LLM's). Right now the focus is on OpenAI's ChatGPT. The pipeline will eventually include:
+1. Automated academic literature search
+2. OCR and text extraction to serialize PDF text, tables, and figures
+3. Function calling to enforce a structured response from an LLM
+4. Prompts designed to extract information from literature corpora
+5. A pipeline to submit requests and format, clean, and structure
 
 ## Installation
 
