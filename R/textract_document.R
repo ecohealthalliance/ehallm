@@ -7,7 +7,7 @@
 #' @export
 #'
 #' @examples
-textract_document <- function(bucket, file) {
+textract_document <- function(bucket, file, timeout = 30) {
 
   # Start analyzing the PDF.
   textract <- paws::textract()
@@ -21,7 +21,7 @@ textract_document <- function(bucket, file) {
 
   # Check that the analysis is done and get the result.
   count <- 0
-  while (count < 30 && (!exists("result") || result$JobStatus == "IN_PROGRESS")) {
+  while (count < timeout && (!exists("result") || result$JobStatus == "IN_PROGRESS")) {
     Sys.sleep(1)
     result <- textract$get_document_analysis(
       JobId = resp$JobId

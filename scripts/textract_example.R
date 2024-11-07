@@ -9,13 +9,13 @@ library(tidyverse)
 
 # AWS S3 bucket name and pdf file location within the bucket
 bucket <- "project-dtra-ml-main"
-file <- "papers/test.pdf"
+file <- "papers/screenasssedfin.pdf"
 
 # Load some required functions
 for (r_file in list.files("R", pattern = "\\.R$", recursive = TRUE, full.names = TRUE)) try(source(r_file))
 
 # Get a PDF document's tables using Amazon Textract.
-document <- textract_document(bucket, file)
+document <- textract_document(bucket, file, timeout = 120)
 
 # Extract the blocks as a nested tibble
 blocks <- get_textract_blocks(document)
